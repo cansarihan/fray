@@ -1,1 +1,87 @@
-<!doctype html><title>Fray</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fray</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="rail">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><path d="M4 34h10l4-14 8 26 5-18 4 10h13" fill="none" stroke="#86efac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="40" r="3.5" fill="#f0609a"/></svg>
+      <span>Fray</span>
+    </div>
+    <p class="subject" id="subject">—</p>
+    <nav aria-label="Sections">
+      <a href="#/overview" data-page="overview"><svg viewBox="0 0 20 20"><path d="M3 11h3l2-6 3 10 2-7 2 4h2"/></svg>Overview</a>
+      <a href="#/findings" data-page="findings"><svg viewBox="0 0 20 20"><path d="M10 3 3 16h14Z"/><path d="M10 8v4M10 14v.01"/></svg>Findings <span class="pip" id="pip" hidden>0</span></a>
+      <a href="#/model" data-page="model"><svg viewBox="0 0 20 20"><circle cx="5" cy="10" r="2.5"/><circle cx="15" cy="5" r="2.5"/><circle cx="15" cy="15" r="2.5"/><path d="M7 9 13 6M7 11l6 3"/></svg>Model</a>
+      <a href="#/mutators" data-page="mutators"><svg viewBox="0 0 20 20"><path d="M4 7h12M4 10h8M4 13h12"/></svg>Mutators</a>
+      <a href="#/about" data-page="about"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 9v5M10 6.5v.01"/></svg>About</a>
+    </nav>
+    <button id="run" class="run" type="button">Run campaign</button>
+    <p class="build" id="build"></p>
+  </aside>
+
+  <main id="main" tabindex="-1">
+    <section class="page" id="page-overview" aria-labelledby="h-overview">
+      <header class="lede">
+        <h1 id="h-overview">Stress the protocol</h1>
+        <p class="sub" id="lede-sub">One mutation at a time, watching for a hang, a reset or a broken reply.</p>
+      </header>
+      <div class="scope-wrap">
+        <div class="scope-head">
+          <span id="scope-state" class="scope-state idle">idle</span>
+          <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+          <span id="progress-text" class="progress-text"></span>
+        </div>
+        <svg id="graph" class="graph" role="img" aria-label="Protocol state graph; nodes light up where a mutation broke something"></svg>
+        <p class="scope-caption">Each node is a step in the protocol. It glows when a mutation at that step made the target hang, reset or reply wrong.</p>
+      </div>
+      <div class="tiles">
+        <div class="tile"><b id="t-cases">0</b><span>cases</span></div>
+        <div class="tile hang"><b id="t-hang">0</b><span>hangs</span></div>
+        <div class="tile reset"><b id="t-reset">0</b><span>resets</span></div>
+        <div class="tile mismatch"><b id="t-mismatch">0</b><span>mismatches</span></div>
+        <div class="tile"><b id="t-baseline">—</b><span>baseline</span></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-findings" aria-labelledby="h-findings" hidden>
+      <header class="lede"><h1 id="h-findings">Findings</h1><p class="sub">Every case where the target did not reply cleanly. Pick one to see how to reproduce it.</p></header>
+      <div class="filters">
+        <div class="seg" role="group" aria-label="Outcome" id="out-seg">
+          <button data-out="" class="on">All</button><button data-out="timeout">Hangs</button><button data-out="closed">Resets</button><button data-out="mismatch">Mismatches</button>
+        </div>
+      </div>
+      <div class="split">
+        <table class="log"><thead><tr><th scope="col">Result</th><th scope="col">Flow / step</th><th scope="col">Target</th><th scope="col">Mutation</th></tr></thead><tbody id="rows"></tbody></table>
+        <aside class="detail" id="detail"><p class="empty">Select a finding to see its replay.</p></aside>
+      </div>
+    </section>
+
+    <section class="page" id="page-model" aria-labelledby="h-model" hidden>
+      <header class="lede"><h1 id="h-model">The protocol</h1><p class="sub">The flows Fray drives, and the fields it fills and mutates in each step.</p></header>
+      <svg id="graph-big" class="graph" role="img" aria-label="Protocol state graph"></svg>
+      <div id="flows" class="flows"></div>
+    </section>
+
+    <section class="page" id="page-mutators" aria-labelledby="h-mutators" hidden>
+      <header class="lede"><h1 id="h-mutators">What Fray sends</h1><p class="sub">Each field is replaced, in turn, with every variant a fitting mutator produces. Framing mutators attack the message envelope instead.</p></header>
+      <div id="mutators" class="mut-grid"></div>
+    </section>
+
+    <section class="page" id="page-about" aria-labelledby="h-about" hidden>
+      <header class="lede"><h1 id="h-about">About Fray</h1></header>
+      <div class="card prose">
+        <p>Fray tests one of your own network services against a model of its protocol. The model lists the conversations the service supports and the fields in each message; Fray walks them once to be sure they work, then sends every message again with one part replaced by something hostile — an empty value, a megabyte of text, a boundary number, a broken line ending.</p>
+        <p>It reports where the service hangs, drops the connection or stops speaking its own protocol, and it keeps the exact sequence that did it, so each finding can be replayed line by line.</p>
+        <p>The target defaults to loopback. Point Fray at another host only with <code>-allow-remote</code>, and only at one you are authorized to test.</p>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
