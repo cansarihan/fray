@@ -74,11 +74,9 @@ func (s *Server) exec(args []string, authed *bool) string {
 	case "QUIT":
 		return "+BYE"
 	case "SET":
-		// BUG: assumes a value argument exists.
+		// BUG: assumes a value argument exists, so SET with a missing value
+		// dereferences past the end of args and drops the connection.
 		value := args[2]
-		// BUG: an oversized value is copied into a fixed 4 KiB buffer.
-		var buf [4096]byte
-		copy(buf[:], value)
 		s.mu.Lock()
 		s.store[args[1]] = value
 		s.mu.Unlock()
@@ -92,10 +90,11 @@ func (s *Server) exec(args []string, authed *bool) string {
 		}
 		return "+" + v
 	case "EXPIRE":
-		// BUG: a negative TTL is used to size a slice.
+		// BUG: the TTL indexes a fixed ring with no bounds check, so a negative
+		// or out-of-range value panics and drops the connection.
 		ttl, _ := strconv.Atoi(args[2])
-		slots := make([]byte, ttl)
-		_ = slots
+		var ring [3600]int64
+		ring[ttl]++
 		return "+OK"
 	default:
 		return fmt.Sprintf("-ERR unknown command %q", args[0])
