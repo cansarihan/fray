@@ -10,7 +10,6 @@ import (
 	"os"
 	"regexp"
 	"sort"
-	"strings"
 )
 
 // Field is one variable part of a message.
@@ -172,5 +171,5 @@ func (m *Model) String() string {
 	for _, f := range m.Flows {
 		steps += len(f.Steps)
 	}
-	return fmt.Sprintf("%s: %d flows, %d steps", m.Name, len(m.Flows), steps) + strings.Repeat("", 0)
+	return fmt.Sprintf("%s: %d flows, %d steps", m.Name, len(m.Flows), steps)
 }
