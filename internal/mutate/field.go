@@ -11,9 +11,9 @@ func init() {
 // empty sends nothing where a value is expected.
 type empty struct{}
 
-func (empty) kind() string       { return KindField }
-func (empty) Name() string       { return "empty" }
-func (empty) Describe() string   { return "an empty value where one is expected" }
+func (empty) kind() string     { return KindField }
+func (empty) Name() string     { return "empty" }
+func (empty) Describe() string { return "an empty value where one is expected" }
 func (empty) Variants(string) []Variant {
 	return []Variant{{Label: "empty", Value: ""}}
 }
@@ -37,9 +37,11 @@ func (oversize) Variants(seed string) []Variant {
 // might interpolate.
 type formatString struct{}
 
-func (formatString) kind() string     { return KindField }
-func (formatString) Name() string     { return "format-string" }
-func (formatString) Describe() string { return "printf and template markers that must be treated as data" }
+func (formatString) kind() string { return KindField }
+func (formatString) Name() string { return "format-string" }
+func (formatString) Describe() string {
+	return "printf and template markers that must be treated as data"
+}
 func (formatString) Variants(string) []Variant {
 	return []Variant{
 		{Label: "printf", Value: "%s%s%s%s%n"},
@@ -52,9 +54,11 @@ func (formatString) Variants(string) []Variant {
 // that leaks into SQL, a shell or the protocol framing shows itself.
 type injectionChars struct{}
 
-func (injectionChars) kind() string     { return KindField }
-func (injectionChars) Name() string     { return "injection" }
-func (injectionChars) Describe() string { return "quotes, separators and framing bytes that should stay literal" }
+func (injectionChars) kind() string { return KindField }
+func (injectionChars) Name() string { return "injection" }
+func (injectionChars) Describe() string {
+	return "quotes, separators and framing bytes that should stay literal"
+}
 func (injectionChars) Variants(seed string) []Variant {
 	return []Variant{
 		{Label: "quote", Value: seed + "'\""},

@@ -7,9 +7,11 @@ func init() { register(framing{}) }
 // apply to a rendered message, not a single field.
 type framing struct{}
 
-func (framing) kind() string     { return KindFrame }
-func (framing) Name() string     { return "framing" }
-func (framing) Describe() string { return "a message with a broken, doubled or smuggled line terminator" }
+func (framing) kind() string { return KindFrame }
+func (framing) Name() string { return "framing" }
+func (framing) Describe() string {
+	return "a message with a broken, doubled or smuggled line terminator"
+}
 func (framing) Variants(message string) []Variant {
 	trimmed := message
 	for len(trimmed) > 0 && (trimmed[len(trimmed)-1] == '\n' || trimmed[len(trimmed)-1] == '\r') {

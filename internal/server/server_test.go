@@ -54,8 +54,8 @@ func get(t *testing.T, url string, v any) int {
 func TestModelAndMutators(t *testing.T) {
 	srv := testServer(t, "")
 	var mdl struct {
-		Nodes []string      `json:"nodes"`
-		Edges []model.Edge  `json:"edges"`
+		Nodes []string     `json:"nodes"`
+		Edges []model.Edge `json:"edges"`
 	}
 	if get(t, srv.URL+"/api/v1/model", &mdl) != http.StatusOK || len(mdl.Nodes) < 4 {
 		t.Fatalf("model = %+v", mdl)
