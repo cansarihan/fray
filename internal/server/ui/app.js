@@ -152,9 +152,51 @@ function drawGraph(svg, data, lit, big) {
 }
 
 /* placeholders */
-function renderFindings() {}
-function renderModel() {}
-function renderMutators() {}
+let outFilter = "";
+
+function renderFindings() {
+  const rows = findings.filter((f) => f.flow && (!outFilter || f.outcome === outFilter));
+  const body = $("rows");
+  body.innerHTML = rows.length ? rows.map((f, i) => `
+    <tr data-i="${findings.indexOf(f)}" class="${selected === f ? "sel" : ""}" tabindex="0">
+      <td><span class="badge ${f.outcome}">${outWord[f.outcome] || f.outcome}</span></td>
+      <td>${esc(f.flow)} / <b>${esc(f.step)}</b></td>
+      <td class="tgt">${esc(f.target)}</td>
+      <td class="mut">${esc(f.mutation)}</td>
+    </tr>`).join("") : `<tr><td colspan="4" class="empty" style="padding:28px;text-align:center;color:var(--dim)">${status.ran ? "Nothing here — the target held up." : "Run a campaign to see findings."}</td></tr>`;
+  if (selected && !rows.includes(selected)) { selected = null; renderDetail(); }
+}
+
+function renderDetail() {
+  const d = $("detail");
+  if (!selected) { d.innerHTML = `<p class="empty">Select a finding to see its replay.</p>`; return; }
+  const f = selected;
+  const repro = (f.repro || []).map((line, i) => {
+    const marked = i === f.repro.length - 1 ? `<span class="inj">${esc(showBytes(line))}</span>` : esc(showBytes(line));
+    return marked;
+  }).join("\n");
+  d.innerHTML = `
+    <h3>${esc(f.flow)} / ${esc(f.step)}</h3>
+    <p class="meta">The target <b>${outWord[f.outcome] || f.outcome}d</b> when <code>${esc(f.target)}</code> was set to the <b>${esc(f.mutation)}</b> variant.</p>
+    <div class="label">Replay — send these lines in order</div>
+    <pre>${repro}</pre>
+    ${f.reply ? `<div class="label">Last reply</div><div class="reply">${esc(showBytes(f.reply))}</div>` : `<div class="label">Last reply</div><div class="reply" style="color:var(--dim)">— the connection ${f.outcome === "timeout" ? "went silent" : "was dropped"} —</div>`}`;
+}
+
+function renderModel() {
+  if (modelData) drawGraph($("graph-big"), modelData, litNodes(), true);
+  $("flows").innerHTML = (modelData.flows || []).map((flow) => `
+    <section class="flow"><h2>${esc(flow.name)}</h2><ol>` +
+    flow.steps.map((st) => {
+      const fields = Object.entries(st.fields || {}).map(([n, f]) => `${n}:${f.type}`).join("  ");
+      return `<li><span class="sname">${esc(st.name)}</span><span><span class="send">${esc(st.send)}</span>${fields ? `<div class="fields">${esc(fields)}</div>` : ""}</span></li>`;
+    }).join("") + `</ol></section>`).join("");
+}
+
+function renderMutators() {
+  $("mutators").innerHTML = (window.frayMutators || []).map((m) =>
+    `<article class="mut-card"><h3>${esc(m.Name || m.name)}</h3><p>${esc(m.Describe || m.describe)}</p></article>`).join("");
+}
 
 /* ---------- run + stream ---------- */
 
@@ -210,6 +252,17 @@ async function init() {
   window.addEventListener("hashchange", route);
   window.addEventListener("resize", () => { if (modelData && !$("page-overview").hidden) renderOverview(); if (modelData && !$("page-model").hidden) renderModel(); });
   $("run").addEventListener("click", startRun);
+  document.querySelectorAll("#out-seg button").forEach((b) => b.addEventListener("click", () => {
+    outFilter = b.dataset.out;
+    document.querySelectorAll("#out-seg button").forEach((x) => x.classList.toggle("on", x === b));
+    renderFindings();
+  }));
+  const pick = (ev) => {
+    const tr = ev.target.closest("tr[data-i]");
+    if (tr && (ev.type === "click" || ev.key === "Enter")) { selected = findings[Number(tr.dataset.i)]; renderFindings(); renderDetail(); }
+  };
+  $("rows").addEventListener("click", pick);
+  $("rows").addEventListener("keydown", pick);
   try {
     const [st, mdl] = await Promise.all([api("/api/v1/status"), api("/api/v1/model")]);
     status = st; modelData = mdl;
