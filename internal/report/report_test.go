@@ -14,8 +14,8 @@ func sample() engine.Result {
 		Model: "kv", Target: "127.0.0.1:7000", Cases: 79, Elapsed: 2 * time.Second,
 		Counts: map[string]int{"closed": 2, "timeout": 1},
 		Findings: []engine.Finding{
-			{Flow: "store", Step: "set", Target: "field:value", Mutation: "empty", Outcome: "closed", Severity: 2, Repro: []string{"AUTH demo\r\n", "SET k1 \r\n"}},
-			{Flow: "store", Step: "set", Target: "frame", Mutation: "no terminator", Outcome: "timeout", Severity: 3, Repro: []string{"AUTH demo\r\n", "SET k1 hello"}},
+			{Flow: "store", Step: "set", Target: "field:value", Mutation: "empty", Outcome: "closed", Severity: 3, Repro: []string{"AUTH demo\r\n", "SET k1 \r\n"}},
+			{Flow: "store", Step: "set", Target: "frame", Mutation: "no terminator", Outcome: "timeout", Severity: 2, Repro: []string{"AUTH demo\r\n", "SET k1 hello"}},
 		},
 	}
 }
@@ -24,13 +24,13 @@ func TestTable(t *testing.T) {
 	var buf bytes.Buffer
 	Table(&buf, sample())
 	out := buf.String()
-	for _, want := range []string{"kv against 127.0.0.1:7000", "1 hang, 2 reset", "hang", "reset", "field:value"} {
+	for _, want := range []string{"kv against 127.0.0.1:7000", "2 reset, 1 hang", "hang", "reset", "field:value"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("table missing %q\n%s", want, out)
 		}
 	}
-	// the hang (severity 3) is listed before the reset (severity 2)
-	if strings.Index(out, "hang") > strings.Index(out, "reset") {
+	// the reset (severity 3) is listed before the hang (severity 2)
+	if strings.Index(out, "reset") > strings.Index(out, "hang") {
 		t.Error("findings not ordered by severity")
 	}
 }
