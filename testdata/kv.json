@@ -1,0 +1,28 @@
+{
+  "name": "kv",
+  "banner": "^\\+OK",
+  "terminator": "\r\n",
+  "flows": [
+    {
+      "name": "store",
+      "steps": [
+        {"name": "auth", "send": "AUTH {user}", "expect": "^\\+OK",
+         "fields": {"user": {"type": "token", "seed": "demo"}}},
+        {"name": "set", "send": "SET {key} {value}", "expect": "^\\+OK",
+         "fields": {"key": {"type": "token", "seed": "k1"}, "value": {"type": "string", "seed": "hello"}}},
+        {"name": "expire", "send": "EXPIRE {key} {ttl}", "expect": "^\\+OK",
+         "fields": {"key": {"type": "token", "seed": "k1"}, "ttl": {"type": "int", "seed": "60"}}},
+        {"name": "quit", "send": "QUIT", "expect": "^\\+BYE"}
+      ]
+    },
+    {
+      "name": "read",
+      "steps": [
+        {"name": "auth", "send": "AUTH {user}", "expect": "^\\+OK",
+         "fields": {"user": {"type": "token", "seed": "demo"}}},
+        {"name": "get", "send": "GET {key}", "expect": "^(\\+|-ERR)",
+         "fields": {"key": {"type": "token", "seed": "k1"}}}
+      ]
+    }
+  ]
+}
