@@ -1,0 +1,13 @@
+# Demo stack: the deliberately buggy key-value target and the Fray panel beside
+# it, both on loopback inside the container. Open the panel and press Run.
+services:
+  fray:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: fray:demo
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["fray target -listen 127.0.0.1:7000 & exec fray serve -model /models/kv.json -target 127.0.0.1:7000 -panel 0.0.0.0:9100"]
+    ports:
+      - "127.0.0.1:18220:9100"
+    restart: unless-stopped

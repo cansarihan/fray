@@ -37,7 +37,8 @@ tidy:
 
 
 run: build
-	./bin/$(BINARY) run -seed 900 -panel 127.0.0.1:9000
+	./bin/$(BINARY) target -listen 127.0.0.1:7000 & \
+	  ./bin/$(BINARY) serve -model testdata/kv.json -target 127.0.0.1:7000 -panel 127.0.0.1:9100
 
 demo:
 	docker compose -f deploy/docker-compose.yml up --build -d
