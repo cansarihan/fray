@@ -89,7 +89,7 @@ function litNodes() {
   }
   return lit;
 }
-function weight(o) { return { timeout: 3, closed: 2, mismatch: 1 }[o] || 0; }
+function weight(o) { return { closed: 3, timeout: 2, mismatch: 1 }[o] || 0; }
 
 /* ---------- the state graph ---------- */
 
@@ -203,7 +203,8 @@ function renderMutators() {
 async function startRun() {
   $("run").setAttribute("aria-busy", "true");
   $("run").textContent = "Running";
-  findings = [];
+  findings = []; status.counts = {}; status.running = true; status.ran = true; status.done = 0;
+  updatePip(); renderOverview();
   try {
     await api("/api/v1/run", { method: "POST" });
   } catch (err) {

@@ -9,7 +9,7 @@ import (
 
 // severity ranks outcomes: a hang or reset mid-protocol is worse than a reply
 // that merely fails to match.
-var severity = map[conn.Outcome]int{conn.Timeout: 3, conn.Closed: 2, conn.Mismatch: 1}
+var severity = map[conn.Outcome]int{conn.Closed: 3, conn.Timeout: 2, conn.Mismatch: 1}
 
 // baseline runs every flow unmutated and reports whether they all complete.
 func baseline(ctx context.Context, m *model.Model, opts Options) (bool, error) {

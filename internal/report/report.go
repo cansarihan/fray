@@ -92,7 +92,7 @@ func quote(s string) string {
 
 func counts(r engine.Result) string {
 	parts := []string{}
-	for _, o := range []string{"timeout", "closed", "mismatch", "error"} {
+	for _, o := range []string{"closed", "timeout", "mismatch", "error"} {
 		if n := r.Counts[o]; n > 0 {
 			parts = append(parts, fmt.Sprintf("%d %s", n, outcomeWord[o]))
 		}
@@ -105,9 +105,9 @@ func counts(r engine.Result) string {
 
 func weight(o string) int {
 	switch o {
-	case "timeout":
-		return 3
 	case "closed":
+		return 3
+	case "timeout":
 		return 2
 	case "mismatch":
 		return 1
