@@ -30,7 +30,7 @@ func runAgainstTarget(t *testing.T, emit func(Update)) Result {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := Run(context.Background(), m, Options{Network: "tcp", Addr: ln.Addr().String(), Timeout: 700 * time.Millisecond}, emit)
+	res, err := Run(context.Background(), m, Options{Network: "tcp", Addr: ln.Addr().String(), Timeout: 350 * time.Millisecond}, emit)
 	if err != nil {
 		t.Fatal(err)
 	}
