@@ -13,6 +13,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const svgNS = "http://www.w3.org/2000/svg";
 const el = (tag, attrs = {}) => { const n = document.createElementNS(svgNS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); return n; };
 const outWord = { timeout: "hang", closed: "reset", mismatch: "mismatch", error: "error" };
+const outVerb = { timeout: "hung", closed: "dropped the connection", mismatch: "broke the protocol", error: "errored" };
 
 let modelData = null;     // {nodes, edges, flows}
 let findings = [];
@@ -177,7 +178,7 @@ function renderDetail() {
   }).join("\n");
   d.innerHTML = `
     <h3>${esc(f.flow)} / ${esc(f.step)}</h3>
-    <p class="meta">The target <b>${outWord[f.outcome] || f.outcome}d</b> when <code>${esc(f.target)}</code> was set to the <b>${esc(f.mutation)}</b> variant.</p>
+    <p class="meta">The target <b>${outVerb[f.outcome] || f.outcome}</b> when <code>${esc(f.target)}</code> was set to the <b>${esc(f.mutation)}</b> variant.</p>
     <div class="label">Replay — send these lines in order</div>
     <pre>${repro}</pre>
     ${f.reply ? `<div class="label">Last reply</div><div class="reply">${esc(showBytes(f.reply))}</div>` : `<div class="label">Last reply</div><div class="reply" style="color:var(--dim)">— the connection ${f.outcome === "timeout" ? "went silent" : "was dropped"} —</div>`}`;
