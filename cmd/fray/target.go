@@ -4,6 +4,8 @@ import (
 	"flag"
 	"net"
 
+	"os"
+
 	"github.com/cansarihan/fray/internal/logging"
 	"github.com/cansarihan/fray/internal/target"
 )
@@ -14,7 +16,7 @@ func runTarget(args []string) error {
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-	log := logging.New("info", "text", nil)
+	log := logging.New("info", "text", os.Stderr)
 	ctx, stop := signalContext()
 	defer stop()
 	ln, err := net.Listen("tcp", *listen)
