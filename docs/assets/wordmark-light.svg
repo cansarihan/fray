@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 170" width="760" height="170" fill="none">
+  <path d="M30 95 h40 l14 -46 26 92 18 -64 14 36 h30" fill="none" stroke="#cdd8d2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 95 h40 l14 -46 26 92 18 -64 14 36 h30" fill="none" stroke="#15996a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="330" stroke-dashoffset="150"/>
+  <circle cx="168" cy="95" r="5" fill="#f0609a"/>
+  <text x="210" y="92" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="66" font-weight="600" letter-spacing="-1" fill="#0c0f12">Fray</text>
+  <text x="213" y="122" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" letter-spacing="1" fill="#5a6b63">protocol fuzzing until it frays</text>
+</svg>
